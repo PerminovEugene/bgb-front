@@ -13,7 +13,7 @@ const SALT_ROUNDS = 5;
 export class AuthService {
   constructor(
     private readonly userService: UsersService,
-    private readonly jwtService: JwtService,
+    private readonly jwtService: JwtService
   ) {}
 
   public async signUp(body: SignUpDto): Promise<string> {
@@ -22,24 +22,21 @@ export class AuthService {
     const cipherPassword = await this.hashText(body.password, salt);
 
     const user: CreatedUser = await this.userService.create({
-      email: body.username,
+      email: body.email,
       password: cipherPassword,
       salt,
       role: UserRole.customer,
-      status: UserStatus.active,
+      status: UserStatus.active
     });
 
     return this.jwtService.sign(JSON.stringify(user));
   }
 
   public async signIn(body: SignInDto): Promise<string> {
-    const user: Users = await this.userService.findByEmail(body.username);
+    const user: Users = await this.userService.findByEmail(body.email);
     const passwordValid = await this.isPasswordCorrect(user, body.password);
     if (!user || !passwordValid) {
-      throw new HttpException(
-        { message: 'User not found' },
-        HttpStatus.NOT_FOUND,
-      );
+      throw new HttpException({ message: 'User not found' }, HttpStatus.NOT_FOUND);
     }
     return this.jwtService.sign(JSON.stringify(user));
   }
@@ -48,33 +45,27 @@ export class AuthService {
     return await this.userService.findByEmail(payload.email);
   }
 
-  private async isPasswordCorrect(user: Users, password: string) {
+  public async isPasswordCorrect(user: Users, password: string) {
     const cipherPassword = await this.hashText(password, user.salt);
     return cipherPassword === user.password;
   }
 
-  private async generateSalt(): Promise<string> {
+  public async generateSalt(): Promise<string> {
     return await bcrypt.genSalt(SALT_ROUNDS);
   }
 
-  private async hashText(
-    myPlaintextPassword: string,
-    salt: string,
-  ): Promise<string> {
+  public async hashText(myPlaintextPassword: string, salt: string): Promise<string> {
     return await bcrypt.hash(myPlaintextPassword, salt);
   }
 
-  private handlePasswordConfirmation(
-    password: string,
-    passwordConfirmation: string,
-  ): void {
+  public handlePasswordConfirmation(password: string, passwordConfirmation: string): void {
     if (password !== passwordConfirmation) {
       throw new HttpException(
         {
           status: HttpStatus.BAD_REQUEST,
-          error: 'Password and Password confirmation should be equal',
+          error: 'Password and Password confirmation should be equal'
         },
-        400,
+        400
       );
     }
   }

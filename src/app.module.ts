@@ -9,11 +9,20 @@ import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
+import { ConfigModule } from './config/config.module';
+import { ConfigService } from './config/config.service';
 
 @Module({
-  imports: [UsersModule, AuthModule, TypeOrmModule.forRoot()],
+  imports: [
+    UsersModule,
+    AuthModule,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useExisting: ConfigService
+    })
+  ],
   controllers: [AppController, UsersController, AuthController],
-  providers: [AppService, UsersService, AuthService],
+  providers: [AppService, UsersService, AuthService]
 })
 export class AppModule {
   constructor(private readonly connection: Connection) {}

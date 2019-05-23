@@ -1,10 +1,23 @@
+import { IsEmail, IsNotEmpty, Length } from 'class-validator';
+
 export class SignInDto {
-  readonly username: string;
-  readonly password: string;
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @Length(6, 20)
+  password: string;
 }
 
 export class SignUpDto {
-  readonly username: string;
-  readonly password: string;
-  readonly passwordConfirmation: string;
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @Length(6, 20)
+  password: string;
+
+  @IsNotEmpty()
+  @Length(6, 20)
+  passwordConfirmation: string;
 }

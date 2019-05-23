@@ -1,0 +1,7 @@
+{
+  "watch": ["src"],
+  "ext": "ts",
+  "ignore": ["src/**/*.spec.ts"],
+  "exec": "NODE_ENV=development -r ts-node/register -r tsconfig-paths/register src/main.ts",
+  "sourceMaps": true
+}
